@@ -37,6 +37,7 @@ genPasswd() {
    	plog INFO "Using Environment Password for vTM: $ZEUS_PASS"
    fi
    echo "$ZEUS_PASS"
+   echo $ZEUS_PASS >> /usr/local/zeus/passfile
 }
 
 echo "Container Started"
@@ -63,17 +64,17 @@ then
 	# Install additional packages if ZEUS_PACKAGES is set. It should be set to a list of ubuntu packages
 	if [[ -n "$ZEUS_PACKAGES" ]]
 	then
-		apt-get update
+		yum update
 		for package in $ZEUS_PACKAGES
 		do
-			dpkg -l $package | egrep "^ii" > /dev/null
+			yum list $package | egrep "^ii" > /dev/null
 			ret=$?
 			if [ $ret -ne 0 ]
 			then
-				DEBIAN_FRONTEND=noninteractive apt-get install -y $package
+				yum install -y $package
 			fi
 		done
-		apt-get clean
+		yum clean
 	fi
 
 	ZEUS_PASS=$( genPasswd )
@@ -93,19 +94,19 @@ then
 	EOF
 	$ZEUSHOME/zxtm/configure --replay-from=/usr/local/zeus/zconfig.txt
 	touch /usr/local/zeus/docker.done
-	rm /usr/local/zeus/zconfig.txt
+	#rm /usr/local/zeus/zconfig.txt
 
 	# Clear the password
 	export ZEUS_PASS=""
 
 	# Ensure REST is enabled
 	echo "Enabling REST API"
-	echo "GlobalSettings.setRESTEnabled 1" | $zcli
+	echo "GlobalSettings.setRESTEnabled 1" | $zcli --passfile /usr/local/zeus/passfile
 
 	# Disable Java Extensions if we don't have the java binary
 	echo -en "Checking for JAVA Extension Support: "
-	which $(echo "GlobalSettings.getJavaCommand" | $zcli | awk '{ print $1 }' ) || \
-			( echo "java not found" && echo "GlobalSettings.setJavaEnabled 0" | $zcli )
+	which $(echo "GlobalSettings.getJavaCommand" | $zcli --passfile /usr/local/zeus/passfile | awk '{ print $1 }' ) || \
+			( echo "java not found" && echo "GlobalSettings.setJavaEnabled 0" | $zcli --passfile /usr/local/zeus/passfile )
 
 	if [ -n "$ZEUS_DEVMODE" ]
 	then

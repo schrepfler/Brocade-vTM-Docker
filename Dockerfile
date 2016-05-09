@@ -2,25 +2,30 @@ FROM andyfurnival/centos:master
 
 MAINTAINER Andy Furnival
 
-ENV VTM_VERSION 103
+ENV VTM_VERSION 104
 
 COPY zinstall.txt /tmp/
-COPY "ZeusTM_103_Linux-x86_64.tgz" /tmp/
+COPY ZeusTM_104_Linux-x86_64.tar /tmp/
 
 
 
-RUN cd /tmp/ && \
-
-    echo "Downloading VTM Installer... Please wait..." && \
-    #wget "http://www.badpenguin.co.uk/vadc/ZeusTM_${VTM_VERSION}_Linux-x86_64.tgz" && \
-    tar -xzvf ZeusTM_${VTM_VERSION}_Linux-x86_64.tgz && \
-    echo "Running VTM Installer... Please wait..." && \
-	  /tmp/Zeus*/zinstall --replay-from=/tmp/zinstall.txt --noninteractive && \
-    rm -rf /tmp/* && \
-    yum install clean all \
+RUN cd /tmp/  \
+     && yum install -y net-tools \
+     && yum install -y which \
+     && echo "Downloading VTM Installer... Please wait..."  \
+    # &&wget "http://www.badpenguin.co.uk/vadc/ZeusTM_${VTM_VERSION}_Linux-x86_64.tgz"  \
+     && echo "Running VTM Installer... Please wait..."   \
+     && tar -xf ZeusTM_104_Linux-x86_64.tar  \
+     && chmod +x /tmp/Zeus*/zinstall \
+     && /tmp/Zeus*/zinstall --replay-from=/tmp/zinstall.txt --noninteractive  \
+     && rm -rf /tmp/*  \
+     && yum clean all -y
 
 COPY zconfig.txt runzeus.sh /usr/local/zeus/
 
+ENV ZEUSHOME=/usr/local/zeus
+# set the livement mode to developer
+ENV ZEUS_DEVMODE=true
 # ZEUS_EULA must be set to "accept" otherwise the container will do nothing
 ENV ZEUS_EULA=
 
