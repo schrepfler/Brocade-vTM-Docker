@@ -5,7 +5,6 @@ MAINTAINER Andy Furnival
 ENV VTM_VERSION 104
 
 COPY zinstall.txt /tmp/
-# COPY ZeusTM_104_Linux-x86_64.tgz /tmp/
 
 RUN cd /tmp/  \
      && yum install -y net-tools \
