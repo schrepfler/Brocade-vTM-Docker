@@ -11,7 +11,7 @@ RUN cd /tmp/  \
      && yum install -y net-tools \
      && yum install -y which \
      && echo "Downloading VTM Installer... Please wait..."  \
-     && wget "http://www.badpenguin.co.uk/vadc/ZeusTM_${VTM_VERSION}_Linux-x86_64.tgz \
+     && wget "http://www.badpenguin.co.uk/vadc/ZeusTM_${VTM_VERSION}_Linux-x86_64.tgz" \
      && echo "Running VTM Installer... Please wait..."   \
      && tar -xf ZeusTM_${VTM_VERSION}_Linux-x86_64.tgz  \
      && chmod +x /tmp/Zeus*/zinstall \
